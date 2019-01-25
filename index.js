@@ -27,21 +27,17 @@ const workerScript = path.join(__dirname, './sorter.js');
 
 // turn worker activation into promise
 const sortArrayWithWorker = arr => {
-    try {
-        return new Promise((resolve, reject) => {
-            pool.acquire(workerScript, {
-                workerData: arr
-            }, (err, worker) => {
-                if (err) {
-                    return reject(err);
-                }
-                worker.on('message', resolve);
-                worker.on('error', reject);
-            });
+    return new Promise((resolve, reject) => {
+        pool.acquire(workerScript, {
+            workerData: arr
+        }, (err, worker) => {
+            if (err) {
+                return reject(err);
+            }
+            worker.on('message', resolve);
+            worker.on('error', reject);
         });
-    } catch (err) {
-        return reject(err);
-    }
+    });
 };
 // Distribubte array across worker
 async function distributeLoadAcrossWorkers(workers) {
